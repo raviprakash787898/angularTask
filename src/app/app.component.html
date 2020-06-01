@@ -1,0 +1,17 @@
+<div class="container">
+    <div class="row mt-5 ml-2 mr-2">
+        <div class="col mr-2 ml-2 box" *ngFor="let box of tempImage; let i = index" (click)="showImage(i)">
+            <ng-container *ngIf="box.show">
+                <button type="button" class="close" (click)="$event.stopPropagation();deleteImage(i)" aria-label="Close">
+                    <i class="fa fa-times-circle" aria-hidden="true"></i>
+                </button>
+                <img *ngIf="box.show" 
+                    [ngClass]="box.show ? 'active' : ''"
+                    id="{{i}}" 
+                    [src]="box.imagePath" 
+                    class="imgShow"
+                >
+            </ng-container>
+        </div>
+    </div>
+</div>
