@@ -7,11 +7,12 @@ import { Component, OnInit } from '@angular/core';
 })
 
 export class AppComponent implements OnInit{
-  public imageToShow: string = 'assets/images/a.jpg';
+  public imageToShow: any;
   public tempImage: imageObj[] = [];
   public counterCheck: number = 0;
   public showTheImage: boolean = false;
-
+  private allowedFileTypesToUpload = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/x-png'];
+  public filesUploaded: any[] = [];
   constructor() {}
 
   ngOnInit() {
@@ -53,9 +54,14 @@ export class AppComponent implements OnInit{
       }
     }
     else if(check > -1) {
-      if(imageIndex !== checkSeriesFilled && imageIndex !> checkSeriesFilled) {
-        this.tempImage[checkSeriesFilled] = image;
-        this.counterCheck++;
+      if(imageIndex !== checkSeriesFilled) {
+        if(imageIndex !> checkSeriesFilled) {
+          this.tempImage[checkSeriesFilled] = image;
+          this.counterCheck++;
+        }
+        else if(imageIndex < checkSeriesFilled) {
+          this.tempImage[imageIndex] = image;
+        }
       }
       else if(imageIndex == checkSeriesFilled) {
         this.tempImage[imageIndex] = image;
@@ -72,6 +78,56 @@ export class AppComponent implements OnInit{
     this.tempImage.splice(index,1);
     this.counterCheck--;
     this.tempImage.push(image);
+  }
+
+  onFileSelection(fileSelected: any, index: number) {
+    let file: FileList = fileSelected.target.files;
+    let isValidated = this.validateFilesBeforeshow(file);
+    if(isValidated) {
+      this.readImageFile(file, index);
+    }
+  }
+
+  private validateFilesBeforeshow(selectedFilesByUser: FileList): boolean {
+    if (selectedFilesByUser.length == 1) {
+      const file = selectedFilesByUser[0];
+      if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+          alert(`Please select file size less than 5 MB!`);
+          return false;
+        }
+        if (!this.isFileOfValidFileType(file, this.allowedFileTypesToUpload)) {
+          alert('Unsupported file format!');
+          return false;
+        }
+      }
+    }
+    else if(selectedFilesByUser.length > 1) {
+      alert('Attach only single file!!!');
+      return false;
+    }
+    return true;
+  }
+
+  isFileOfValidFileType(file: File, fileTypes: string[]): boolean {
+    let isCorrectFileType = false;
+    fileTypes.forEach(f => {
+      if (file.type == f) {
+        isCorrectFileType = true;
+      }
+    });
+    return isCorrectFileType;
+  }
+
+  readImageFile(file: any, index: number) {
+    var reader = new FileReader();
+    reader.readAsDataURL(file[0]);
+    reader.onload = (_event) => {
+      this.imageToShow = reader.result;
+      if (file.length == 1) {
+        this.showImage(index);
+      }
+    }
   }
 }
 

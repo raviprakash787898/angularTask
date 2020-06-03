@@ -1,6 +1,7 @@
 <div class="container">
     <div class="row mt-5 ml-2 mr-2">
-        <div class="col mr-2 ml-2 box" *ngFor="let box of tempImage; let i = index" (click)="showImage(i)">
+        <div class="col mr-2 ml-2 box" *ngFor="let box of tempImage; let i = index" (click)="file.click()">
+            <input id="filePicker{{i}}" #file hidden type="file" accept="image" (change)="onFileSelection($event,i)" />
             <ng-container *ngIf="box.show">
                 <button type="button" class="close" (click)="$event.stopPropagation();deleteImage(i)" aria-label="Close">
                     <i class="fa fa-times-circle" aria-hidden="true"></i>
